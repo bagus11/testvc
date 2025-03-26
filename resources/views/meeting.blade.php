@@ -10,7 +10,9 @@
             width: 100%;
             border-radius: 10px;
             border: 2px solid #007bff;
+            transform: scaleX(-1);
         }
+
     </style>
 </head>
 <body class="bg-light">
@@ -51,9 +53,9 @@
                 localStream = stream;
                 localVideo.srcObject = stream;
                 stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-            });
-
-        socket.emit("join-room", roomId, userId);
+                socket.emit("join-room", roomId, userId);
+            })
+            .catch(err => console.error("Webcam Error:", err));
 
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
@@ -62,7 +64,10 @@
         };
 
         peerConnection.ontrack = (event) => {
-            remoteVideo.srcObject = event.streams[0];
+            if (!remoteVideo.srcObject) {
+                remoteVideo.srcObject = new MediaStream();
+            }
+            event.streams[0].getTracks().forEach(track => remoteVideo.srcObject.addTrack(track));
         };
 
         socket.on("user-connected", async (otherUserId) => {
@@ -86,23 +91,19 @@
             await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
         });
 
-        // Tombol Mute
         document.getElementById("muteButton").addEventListener("click", function () {
             const audioTrack = localStream.getAudioTracks()[0];
             if (audioTrack.enabled) {
                 audioTrack.enabled = false;
                 this.textContent = "Unmute";
-                this.classList.remove("btn-danger");
-                this.classList.add("btn-success");
+                this.classList.replace("btn-danger", "btn-success");
             } else {
                 audioTrack.enabled = true;
                 this.textContent = "Mute";
-                this.classList.remove("btn-success");
-                this.classList.add("btn-danger");
+                this.classList.replace("btn-success", "btn-danger");
             }
         });
 
-        // Tombol End Call
         document.getElementById("endCall").addEventListener("click", function () {
             localStream.getTracks().forEach(track => track.stop());
             peerConnection.close();
