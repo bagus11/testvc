@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: "192.168.1.9",
         methods: ["GET", "POST"]
     },
     transports: ["websocket", "polling"], // Tambahkan transport WebSocket & polling
