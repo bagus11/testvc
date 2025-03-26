@@ -12,6 +12,11 @@ const io = socketIo(server, {
     }
 });
 
+// Tambahkan handler untuk root path
+app.get("/", (req, res) => {
+    res.send("Socket.IO server is running...");
+});
+
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
