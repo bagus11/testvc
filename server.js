@@ -1,19 +1,18 @@
 const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
+const { Server } = require("socket.io");
 const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-    transports: ["websocket", "polling"],
+const io = new Server(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
-    }
+    },
+    transports: ["websocket", "polling"], // Tambahkan transport WebSocket & polling
 });
 
-// Tambahkan handler untuk root path
 app.get("/", (req, res) => {
     res.send("Socket.IO server is running...");
 });
@@ -46,4 +45,3 @@ io.on("connection", (socket) => {
 server.listen(3000, "0.0.0.0", () => {
     console.log("Socket.IO server running on port 3000 (IPv4 & IPv6)");
 });
-
