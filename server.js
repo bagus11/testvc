@@ -9,11 +9,12 @@ app.use(cors()); // Pastikan CORS diterapkan
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // Biarkan semua origin (bisa diganti daftar whitelist)
+        origin: "http://192.168.1.9:3000",
         methods: ["GET", "POST"]
     },
-    transports: ["websocket", "polling"], // Pastikan polling ditambahkan
+    transports: ["websocket", "polling"],
 });
+
 
 app.get("/", (req, res) => {
     res.send("Socket.IO server is running...");
